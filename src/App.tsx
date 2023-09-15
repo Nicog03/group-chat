@@ -22,7 +22,7 @@ const database = getDatabase(app);
 
 const dbRef = ref(database);
 
-let data;
+let data: Message[];
 
 interface Message {
   message: string;
@@ -68,6 +68,7 @@ function App() {
     setValue((v) => v + 1);
     onValue(dbRef, (snapshot) => {
       data = snapshot.val();
+      console.log(data);
       updateMessages([]);
       for (const property in data) {
         updateMessages((prev) => [...prev, data[property]]);
