@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useRef } from "react";
 
 import classes from "./app.module.css";
 import CaretRight from "./assets/arrow.svg";
@@ -6,17 +6,11 @@ import exit from "./assets/exit.svg";
 import { useNavigate } from "react-router-dom";
 
 import { initializeApp } from "firebase/app";
-import {
-  QuerySnapshot,
-  addDoc,
-  collection,
-  getFirestore,
-  query,
-} from "firebase/firestore";
+import { addDoc, collection, getFirestore, query } from "firebase/firestore";
 
 import "firebase/firestore";
 
-import { doc, setDoc, onSnapshot } from "firebase/firestore";
+import { doc, onSnapshot } from "firebase/firestore";
 
 import { useCollectionData } from "react-firebase-hooks/firestore";
 
