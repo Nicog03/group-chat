@@ -1,84 +1,84 @@
-import { initializeApp } from "firebase/app";
-import { useEffect, useState } from "react";
-import { getDatabase, ref, push, onValue, child, get } from "firebase/database";
+import { useEffect, useState, useRef } from "react";
+
 import classes from "./app.module.css";
 import CaretRight from "./assets/arrow.svg";
 import exit from "./assets/exit.svg";
 import { useNavigate } from "react-router-dom";
 
+import { initializeApp } from "firebase/app";
+import {
+  QuerySnapshot,
+  addDoc,
+  collection,
+  getFirestore,
+  query,
+} from "firebase/firestore";
+
+import "firebase/firestore";
+
+import { doc, setDoc, onSnapshot } from "firebase/firestore";
+
+import { useCollectionData } from "react-firebase-hooks/firestore";
+
 const firebaseConfig = {
   apiKey: "AIzaSyDDU2dTJm6tNuDYfWTpBbc8HYmIsDqu9bs",
+
   authDomain: "group-chat-7462d.firebaseapp.com",
+
+  databaseURL: "https://group-chat-7462d-default-rtdb.firebaseio.com",
+
   projectId: "group-chat-7462d",
+
   storageBucket: "group-chat-7462d.appspot.com",
+
   messagingSenderId: "403490979981",
+
   appId: "1:403490979981:web:99852e4a0b71e729b4a2c4",
-  databaseURL: "https://group-chat-7462d-default-rtdb.firebaseio.com/",
 };
 
 const app = initializeApp(firebaseConfig);
 
-const database = getDatabase(app);
-
-const dbRef = ref(database);
-
-let data: Message[];
-
-interface Message {
-  message: string;
-  user: string;
-}
+const db = getFirestore(app);
 
 function App() {
-  const [message, setMessage] = useState("");
-  const [, setValue] = useState(0);
-  const [messages, updateMessages] = useState<Message[]>([]);
-
   const navigate = useNavigate();
 
-  const buttonClickHandler = () => {
-    push(dbRef, {
-      message: message,
-      user: localStorage.getItem("username"),
-    });
-  };
+  !localStorage.getItem("username") ? navigate("/identification") : null;
 
-  useEffect(() => {
-    get(child(dbRef, "/"))
-      .then((snapshot) => {
-        if (snapshot.exists()) {
-          const data = snapshot.val();
+  const messageInput = useRef(null);
 
-          for (const properties in data) {
-            const messageObj: Message = {
-              user: data[properties].user,
-              message: data[properties].message,
-            };
-            updateMessages((current) => [...current, messageObj]);
-          }
-        } else {
-          console.log("No data available");
-        }
-      })
-      .catch((error) => console.error(error));
-  }, []);
+  const el = useRef(null);
 
-  const formSubmitHandler = (e: React.FormEvent<HTMLFormElement>) => {
+  const q = query(collection(db, "messages"));
+
+  const formSubmitHandler = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setValue((v) => v + 1);
-    onValue(dbRef, (snapshot) => {
-      data = snapshot.val();
-      console.log(data);
-      updateMessages([]);
-      for (const property in data) {
-        updateMessages((prev) => [...prev, data[property]]);
-      }
+    await addDoc(collection(db, "messages"), {
+      message: messageInput.current.value,
+      user: localStorage.getItem("username"),
+      createdAt: new Date(),
     });
-    setMessage("");
+    messageInput.current.value = "";
+    el.current.scrollIntoView();
   };
+
+  const [col] = useCollectionData(q);
+
+  const messages = col;
+
+  messages?.sort((a, b) => a.createdAt > b.createdAt);
+
+  console.log("new data:", col);
+
+  console.log("the data:", messages);
+
+  onSnapshot(doc(db, "messages", "messages"), (doc) => {
+    console.log("current data:", doc.data());
+  });
 
   const exitHandler = () => {
     navigate("/identification");
+    localStorage.removeItem("username");
   };
 
   return (
@@ -91,29 +91,24 @@ function App() {
           </button>
         </div>
         <div className={classes.textbox}>
-          {messages.map((msg) => (
-            <div
-              className={`${classes.messageDiv} ${
-                localStorage.getItem("username") === msg.user
-                  ? classes.sent
-                  : classes.received
-              }`}
-            >
-              <p className={classes.username}>{msg.user}</p>
-              <p className={classes.message}>{msg.message}</p>
-            </div>
-          ))}
+          {messages &&
+            messages.map((msg) => (
+              <div
+                className={`${classes.messageDiv} ${
+                  localStorage.getItem("username") === msg.user
+                    ? classes.sent
+                    : classes.received
+                }`}
+              >
+                <p className={classes.username}>{msg.user}</p>
+                <p className={classes.message}>{msg.message}</p>
+              </div>
+            ))}
+          <span ref={el}></span>
         </div>
         <form onSubmit={formSubmitHandler} action="" className={classes.form}>
-          <input
-            type="text"
-            placeholder="message"
-            value={message}
-            onChange={(e) => {
-              setMessage(e.target.value);
-            }}
-          />
-          <button onClick={buttonClickHandler}>
+          <input type="text" placeholder="message" ref={messageInput} />
+          <button type="submit">
             <img src={CaretRight} alt="" />
           </button>
         </form>
