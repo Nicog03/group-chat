@@ -34,33 +34,39 @@ const app = initializeApp(firebaseConfig);
 
 const db = getFirestore(app);
 
+// interface Message {
+//   message: string;
+//   user: string;
+//   createdAt: Date;
+// }
+
 function App() {
   const navigate = useNavigate();
 
   !localStorage.getItem("username") ? navigate("/identification") : null;
 
-  const messageInput = useRef(null);
+  const messageInput = useRef<HTMLInputElement>(null);
 
-  const el = useRef(null);
+  const el = useRef<HTMLSpanElement>(null);
 
   const q = query(collection(db, "messages"));
 
   const formSubmitHandler = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     await addDoc(collection(db, "messages"), {
-      message: messageInput.current.value,
+      message: messageInput.current!.value,
       user: localStorage.getItem("username"),
       createdAt: new Date(),
     });
-    messageInput.current.value = "";
-    el.current.scrollIntoView();
+    messageInput.current!.value = "";
+    el.current!.scrollIntoView();
   };
 
   const [col] = useCollectionData(q);
 
   const messages = col;
 
-  messages?.sort((a, b) => a.createdAt > b.createdAt);
+  messages?.sort((a, b) => (a.createdAt > b.createdAt ? 1 : 0));
 
   console.log("new data:", col);
 
@@ -103,7 +109,7 @@ function App() {
         <form onSubmit={formSubmitHandler} action="" className={classes.form}>
           <input type="text" placeholder="message" ref={messageInput} />
           <button type="submit">
-            <img src={CaretRight} alt="" />
+            <img src={CaretRight} alt="" />f
           </button>
         </form>
       </div>
