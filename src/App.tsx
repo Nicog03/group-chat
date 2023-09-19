@@ -34,12 +34,6 @@ const app = initializeApp(firebaseConfig);
 
 const db = getFirestore(app);
 
-// interface Message {
-//   message: string;
-//   user: string;
-//   createdAt: Date;
-// }
-
 function App() {
   const navigate = useNavigate();
 
