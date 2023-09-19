@@ -62,14 +62,6 @@ function App() {
 
   messages?.sort((a, b) => (a.createdAt > b.createdAt ? 1 : 0));
 
-  console.log("new data:", col);
-
-  console.log("the data:", messages);
-
-  onSnapshot(doc(db, "messages", "messages"), (doc) => {
-    console.log("current data:", doc.data());
-  });
-
   const exitHandler = () => {
     navigate("/identification");
     localStorage.removeItem("username");
