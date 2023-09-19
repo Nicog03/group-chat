@@ -4,7 +4,7 @@ import classes from "./app.module.css";
 import CaretRight from "./assets/arrow.svg";
 import exit from "./assets/exit.svg";
 import { useNavigate } from "react-router-dom";
-
+import UserMessage from "./components/UserMessage/UserMessage";
 import { initializeApp } from "firebase/app";
 import { addDoc, collection, getFirestore, query } from "firebase/firestore";
 
@@ -93,16 +93,7 @@ function App() {
         <div className={classes.textbox}>
           {messages &&
             messages.map((msg) => (
-              <div
-                className={`${classes.messageDiv} ${
-                  localStorage.getItem("username") === msg.user
-                    ? classes.sent
-                    : classes.received
-                }`}
-              >
-                <p className={classes.username}>{msg.user}</p>
-                <p className={classes.message}>{msg.message}</p>
-              </div>
+              <UserMessage user={msg.user} message={msg.message} />
             ))}
           <span ref={el}></span>
         </div>

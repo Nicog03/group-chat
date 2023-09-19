@@ -82,33 +82,3 @@ body {
   overflow-y: scroll;
   height: 50vh;
 }
-
-.messageDiv {
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-}
-
-.username {
-  font-size: 0.75rem;
-  background-color: black;
-  color: white;
-  width: fit-content;
-  padding: 3px 5px;
-}
-
-.message {
-  margin-inline-start: 10px;
-  border: black solid 1px;
-  padding: 1px 5px;
-  width: fit-content;
-  max-width: 20rem;
-}
-
-.sent {
-  align-self: flex-end;
-}
-
-.received {
-  align-self: flex-start;
-}
