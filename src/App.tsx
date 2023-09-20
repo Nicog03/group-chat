@@ -10,8 +10,6 @@ import { addDoc, collection, getFirestore, query } from "firebase/firestore";
 
 import "firebase/firestore";
 
-import { doc, onSnapshot } from "firebase/firestore";
-
 import { useCollectionData } from "react-firebase-hooks/firestore";
 
 const firebaseConfig = {
